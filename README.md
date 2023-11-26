@@ -17,6 +17,8 @@ Currently, two official plugins are available:
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.17.0"
 
+  APIKEY:
+
 
 //// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
