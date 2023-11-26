@@ -19,7 +19,7 @@ import { useCounter } from "../Hooks/useCounter"
         <div>
             <button onClick={handleSuma}> + </button>
             <button onClick={handleResta}> - </button>
-            <button onClick={onAdd}>Agregar al carrito</button>
+            <button onClick={handleOnAdd}>Agregar al carrito</button>
         </div>
         </>
 

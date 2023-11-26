@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { collection, getDocs, getFirestore, query, where} from 'firebase/firestore'
 import { mFetch } from "../../utilidades/mFetch"
 import { Link, useParams } from "react-router-dom"
 
@@ -7,25 +8,47 @@ import { Link, useParams } from "react-router-dom"
 
 function ItemListContainer({greetings='saludo'}) {
   const [productos, setProductos] =useState ([])
+  const [producto, setProducto] =useState ([])
 
   const {cid} = useParams()
 
-  useEffect (()=>{
-    if (cid) {
-      mFetch ()
-      .then (
-        resultado => setProductos (resultado.filter(product => product.category ===cid)))
-      .catch(error => console.log(error))
-      .finally(()=> console.log ('ultimo'))
+  // useEffect (()=>{
+  //   if (cid) {
+  //     mFetch ()
+  //     .then (
+  //       resultado => setProductos (resultado.filter(product => product.category ===cid)))
+  //     .catch(error => console.log(error))
+  //     .finally(()=> console.log ('ultimo'))
 
-    }else {
-    mFetch ()
-    .then (
-      resultado => setProductos (resultado))
-    .catch(error => console.log(error))
-    .finally(()=> console.log ('ultimo'))
-    }
-  }, [cid]) 
+  //   }else {
+  //   mFetch ()
+  //   .then (
+  //     resultado => setProductos (resultado))
+  //   .catch(error => console.log(error))
+  //   .finally(()=> console.log ('ultimo'))
+  //   }
+  // }, [cid]) 
+  useEffect (()=> {
+    if (cid) {
+    const dbFirestore= getFirestore()
+    const queryCollection = collection (dbFirestore, 'productos')
+    const queryFilter = query (queryCollection, where('category','==', cid))
+
+    getDocs (queryFilter)
+    .then (res => setProductos (res.docs.map(product => ({id: product.id, ...product.data() }))))
+    .catch (err => console.log (err))
+  
+  } else {
+    const dbFirestore= getFirestore()
+    const queryCollection = collection (dbFirestore, 'productos')
+    getDocs (queryCollection)
+    .then (res => setProductos (res.docs.map(product => ({id: product.id, ...product.data() }))))
+    .catch (err => console.log (err))
+  }
+  },[cid])
+  console.log(productos)
+
+
 
   console.log (productos)
   return (
@@ -36,7 +59,7 @@ function ItemListContainer({greetings='saludo'}) {
          
         <div className="d-flex justify-content-center align-items-center">
           {productos.map(product=>  
-          <div className="card w-25">
+          <div  key={product.id} className="card w-25">
              <img src= {product.imageUrl} className= "card-img-top" />
     
              <div className= "card-body">
